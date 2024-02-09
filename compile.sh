@@ -1,0 +1,1 @@
+g++ -std=c++17 MoranModel.cpp -o MoranSim
