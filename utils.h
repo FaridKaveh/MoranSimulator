@@ -9,6 +9,9 @@ void printVector(const std::vector<T>& vec);
 template <typename T> 
 void printVectorOfVectors(const std::vector< std::vector<T> >& vecOfVecs);
 
+template <typename T>
+int countNonZeroEntries(const std::vector<T>& vec); 
+
 #include "template_utils.tpp"
 
 #endif
