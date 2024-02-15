@@ -4,7 +4,7 @@
 #include <vector>
 #include <array>
 #include "utils.h" //print_vector
-#include "MoranProcess.h"
+#include "MoranModel.h"
 
 void MoranProcess::generatePath(){ 
 
