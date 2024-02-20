@@ -19,9 +19,10 @@ public:
         generatePath();
     };
     void regeneratePath(){generatePath();};
-    void getFamilyHistories();
+    int getFamilyHistories(bool draw = false);
     int getPopulation(){return this -> population;};
     int getPathLength(){return this -> events;};
+    std::vector<double> getEventTimes(){return this -> event_times;};
     
 };
 

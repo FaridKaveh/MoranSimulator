@@ -1,1 +1,1 @@
-g++ -std=c++17 MoranModel.cpp -o MoranSim
+g++ -std=c++17 MoranModel.cpp main.cpp -o bin/main
