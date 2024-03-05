@@ -1,0 +1,4 @@
+#pragma once
+
+#define MoranModel_VERSION_MAJOR @MoranModel_VERSION_MAJOR@
+#define MoranModel_VERSION_MINOR @MoranModel_VERSION_MINOR@
