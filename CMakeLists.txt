@@ -19,13 +19,15 @@ enable_testing()
 
 configure_file(MoranConfig.h.in MoranConfig.h)
 
-add_library(MoranModel MoranModel/MoranModel.cpp MoranModel/MoranModel.h)
-add_library(utils utils/utils.cpp utils/utils.h)
+add_subdirectory(MoranModel)
+add_subdirectory(utils)
+# add_library(MoranModel MoranModel/MoranModel.cpp MoranModel/MoranModel.h)
+# add_library(utils utils/utils.cpp utils/utils.h)
 
-add_executable(main main.cpp)
+add_executable(MoranSimulator main.cpp)
 
-target_link_libraries(main PUBLIC MoranModel)
-target_include_directories(main PUBLIC "${PROJECT_BINARY_DIR}"
+target_link_libraries(MoranSimulator PUBLIC MoranModel utils)
+target_include_directories(MoranSimulator PUBLIC "${PROJECT_BINARY_DIR}"
                                        "${PROJECT_SOURCE_DIR}/MoranModel"
                                        "${PROJECT_SOURCE_DIR}/utils")
 
