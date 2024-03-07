@@ -1,47 +1,38 @@
 #include <iostream>
-#include "MoranModel.h"
 #include <algorithm>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include "MoranConfig.h"
+#include "/home/farid/Documents/git/MoranSimulator/utils/utils.h"
+#include "/home/farid/Documents/git/MoranSimulator/MoranModel/MoranModel.h"
 
-int main(){ 
 
-    int N = 0;
-    int population = 0;
-    int events = 0;
-    
-    std::cout << "Population: ";
-    std::cin >> population;
-    
-    std::cout << std::endl << "Number of events: ";
-    std::cin >> events;
-     
-    std::cout << std::endl << "Indicate number of runs: "; 
-    std::cin >> N;
-    
-    std::cout << std::endl;
+int main(int argc, char* argv[]){ 
 
-    MoranProcess moran(population, events); 
-    std::vector<int> total_gen;
-    total_gen.reserve(N);
-    for (int i = 0; i < N; ++i){
-        total_gen.push_back(moran.getFamilyHistories());
 
-        moran.regeneratePath();
+    std::cout << "VERSION " << MoranModel_VERSION_MAJOR << "."
+    << MoranModel_VERSION_MINOR << std::endl; 
+
+    if (argc != 4) { 
+        std::cout << "Incorrect number of arguments\n"; 
+        std::cout << "Usage: " << "./MoranSimulator population events runs\n";
+
+        return 1;
     }
     
-    double mean = 0;
-    double second_moment = 0;
+    
+    int runs = atoi(argv[3]);
+    int events = atoi(argv[2]);
+    int population = atoi(argv[1]);
+    
+    printf("POPULATION = %i, ", population);
+    printf("EVENTS = %i, ", events);
+    printf("RUNS = %i \n", runs); 
 
-    std::for_each(total_gen.begin(), total_gen.end(), [&](const int& gens){
-        mean += gens;
-        second_moment += gens*gens;
-        // std::cout << "square = " <<  gens*gens << std::endl;
-        // std::cout << "second_moment= " << second_moment << std::endl;
-    });
 
-    mean /= N;
-    second_moment /= N;
-    double variance = second_moment - mean*mean;
-
-    printf("mu = %f, sigma^2 = %f\n", mean, variance);
+    MoranProcess moran(population, events); 
+    std::cout << "S = " << moran.calculateNumberOfMutationEvents() << std::endl; 
+    
     return 0;
 }

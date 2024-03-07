@@ -7,7 +7,7 @@
 #include "/home/farid/Documents/git/MoranSimulator/utils/utils.h" //print_vector
 #include "MoranModel.h"
 
-void MoranProcess::generatePath(){ 
+void MoranProcess::generateTree(){ 
 
     event_history.clear();
     event_times.clear();
@@ -71,7 +71,7 @@ void MoranProcess::generateMuts(){
     }
 }
 
-int MoranProcess::getFamilyHistories(bool draw){ 
+int MoranProcess::calculateFamilyHistories(bool draw){ 
 
     std::vector<double> family_placement; //keep track of which individuals belong to which families
     family_placement.reserve(population);
@@ -109,4 +109,14 @@ int MoranProcess::getFamilyHistories(bool draw){
     if (draw) printVector(family_placement);
 
     return i;
+}
+
+int MoranProcess::calculateNumberOfMutationEvents(){ 
+    return std::accumulate(mutations.begin(), mutations.end(), 0); 
+}
+
+std::vector<int> MoranProcess::calcualteSegregatingSites(){ 
+
+    std::vector<int> segregating_sites (population, 0);
+
 }

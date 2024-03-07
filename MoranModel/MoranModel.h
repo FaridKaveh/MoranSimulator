@@ -13,20 +13,37 @@ stores a vector of arrays that records the history. The statistics can all be in
 private:
     int population; 
     int events;
+
+    std::vector<double> event_times;
     std::vector <int> event_history; 
     std::vector <int> mutations;
-    std::vector<double> event_times;
-    void generatePath();
+    
+    void generatePath(){
+        generateTree();
+        generateMuts();
+    };
+
+    void generateTree();
     void generateMuts();
+
 public:
     MoranProcess(const int& pop,const int& event_num): population(pop), events(event_num){
         generatePath();
     };
-    void regeneratePath(){generatePath();};
-    int getFamilyHistories(bool draw = false);
-    int getPopulation(){return this -> population;};
-    int getPathLength(){return this -> events;};
-    std::vector<double> getEventTimes(){return this -> event_times;};
+
+    void regeneratePath(){generatePath();}
+
+    
+    int getPopulation(){return this -> population;}
+    int getPathLength(){return this -> events;}
+
+    std::vector<double> getEventTimes(){return this -> event_times;}
+    std::vector<int> getEventHistory(){return this -> event_history;}
+    std::vector<int> getMutations(){return this -> mutations;}
+
+    int calculateFamilyHistories(bool draw = false);
+    int calculateNumberOfMutationEvents();
+    std::vector<int> calcualteSegregatingSites();
     
 };
 
