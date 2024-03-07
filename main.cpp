@@ -32,15 +32,20 @@ int main(int argc, char* argv[]){
 
 
     MoranProcess moran(population, events); 
-    int average_mutations = 0; 
+    int average_quotient = 0; 
+    int average_remainder = 0;
     int mutations = 0;
 
     for (unsigned i = 0; i < runs; ++i){ 
         mutations = moran.calculateNumberOfMutationEvents();
-        average_mutations += mutations/runs + mutations % runs; 
+        average_quotient += mutations / runs;  
+        average_remainder += mutations % runs;
         moran.regeneratePath();
     }
+
+    int average_mutations = average_quotient + average_remainder / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
+    // printVector(moran.getMutations());
     
     return 0;
 }
