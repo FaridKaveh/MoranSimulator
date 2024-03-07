@@ -22,6 +22,13 @@ void printVectorOfVectors(const std::vector<std::vector<T>>& vecOfVecs) {
 
 template<typename T>
 int binarySearch(const T& target, const std::vector<T>& vec) {
+
+    /*Searches sorted vector vec for target. If target is found in vec it 
+    returns the index of target in vec. If vec[0] <= target <= vec[vec.size()-1], 
+    then it returns index i such that vec[i] < target < vec[i+1]. Else if target < vec[0]
+    the function returns 0. Else we have target > vec[vec.size()-1] and the function returns
+    vec.size()-1.  */
+    
     int left = 0;
     int right = vec.size() - 1;
 
@@ -38,9 +45,9 @@ int binarySearch(const T& target, const std::vector<T>& vec) {
     }
 
     if (right < 0) {
-        return -1;
+        return 0;
     } else if (left >= vec.size()) {
-        return vec.size();
+        return vec.size()-1;
     } else {
         if (vec[left] > target) return left -1;
 

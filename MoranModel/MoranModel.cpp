@@ -31,11 +31,14 @@ void MoranProcess::generateTree(){
 }
 
 void MoranProcess::generateMuts(){
+
+    mutations.clear();
+    
     std::random_device rd;
     std::default_random_engine engine(rd());
 
     double total_time = std::accumulate(event_times.begin(), event_times.end(), 0.0); 
-    double rate = total_time * THETA/2; 
+    double rate = population* total_time * THETA/2; 
 
     std::poisson_distribution<int> mut_dist(rate);
     int mut_number = mut_dist(engine); 
@@ -54,7 +57,13 @@ void MoranProcess::generateMuts(){
     for (int i = 0; i < mut_number; i++){ 
         draw = mut_drop(engine); 
         box = binarySearch(draw, weights);
+        try{ 
         ++allocations.at(box);
+        }
+
+        catch (...){ 
+            printf("box = %i, draw = %f\n", box, draw);
+        }
     }
 
     mutations.insert(mutations.end(), population*events, 0); 
@@ -118,5 +127,5 @@ int MoranProcess::calculateNumberOfMutationEvents(){
 std::vector<int> MoranProcess::calcualteSegregatingSites(){ 
 
     std::vector<int> segregating_sites (population, 0);
-
+    return segregating_sites;
 }

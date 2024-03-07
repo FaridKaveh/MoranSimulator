@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
         return 1;
     }
     
-    
+
     int runs = atoi(argv[3]);
     int events = atoi(argv[2]);
     int population = atoi(argv[1]);
@@ -32,7 +32,15 @@ int main(int argc, char* argv[]){
 
 
     MoranProcess moran(population, events); 
-    std::cout << "S = " << moran.calculateNumberOfMutationEvents() << std::endl; 
+    int average_mutations = 0; 
+    int mutations = 0;
+
+    for (unsigned i = 0; i < runs; ++i){ 
+        mutations = moran.calculateNumberOfMutationEvents();
+        average_mutations += mutations/runs + mutations % runs; 
+        moran.regeneratePath();
+    }
+    std::cout << "<S> = " << average_mutations << std::endl; 
     
     return 0;
 }
