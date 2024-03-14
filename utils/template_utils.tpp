@@ -25,10 +25,12 @@ int binarySearch(const T& target, const std::vector<T>& vec) {
 
     /*Searches sorted vector vec for target. If target is found in vec it 
     returns the index of target in vec. If vec[0] <= target <= vec[vec.size()-1], 
-    then it returns index i such that vec[i] < target < vec[i+1]. Else if target < vec[0]
+    then it returns index i such that vec[i-1] < target < vec[i]. Else if target < vec[0]
     the function returns 0. Else we have target > vec[vec.size()-1] and the function returns
     vec.size()-1.  */
     
+
+    //TO DO: Test this function throughly including edge cases.
     int left = 0;
     int right = vec.size() - 1;
 
@@ -49,8 +51,19 @@ int binarySearch(const T& target, const std::vector<T>& vec) {
     } else if (left >= vec.size()) {
         return vec.size()-1;
     } else {
-        if (vec[left] > target) return left -1;
+        // if (vec[left] > target) return left;
 
         return left;
+    }
+}
+
+template <typename T> 
+void addVectors(const std::vector<T>& summand, std::vector<T>& vec){ 
+    if (summand.size() != vec.size()) {
+        throw std::runtime_error("addVectors: vector dimensions do not match");
+    }
+
+    for (size_t i = 0; i < vec.size(); i++) {
+        vec.at(i) += summand.at(i);
     }
 }
