@@ -15,6 +15,9 @@ int countNonZeroEntries(const std::vector<T>& vec);
 template <typename T>
 int binarySearch(const T& num, const std::vector<T>& vec);
 
+template <typename T> 
+void addVectors(const T& summand, T& vec);
+
 #include "template_utils.tpp"
 
 #endif
