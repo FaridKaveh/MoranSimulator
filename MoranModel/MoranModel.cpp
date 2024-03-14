@@ -67,13 +67,13 @@ void MoranProcess::generateMuts(){
     }
 
     mutations.insert(mutations.end(), population*events, 0); 
-    std::uniform_int_distribution<> pick_line (0,population); 
+    std::uniform_int_distribution<> pick_line (0,population-1); 
     int line; 
 
     for (int i = 0; i < events; ++i) { 
         while (allocations.at(i) > 0){
         line = pick_line(engine);
-        ++mutations.at(i+line);
+        ++mutations.at(population*i+line);
 
         --allocations.at(i);
         }
