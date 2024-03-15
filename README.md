@@ -27,4 +27,4 @@ Beware that CMake has several dependencies which will need to be installed first
    POPULATION = 10, EVENTS = 100, RUNS = 1000 
    <S> = 74
 ```
-Here S is the total number of mutations occuring among the population throughout all events. <S\> is the average of this quantity across the 1000 runs. 
+Here S is the total number of mutations occuring among the population throughout all events. <S\> is the average of this quantity across the 1000 runs. If you want to change what is being calculated, you can go into main and change it to calculate your favourite statistic. 
