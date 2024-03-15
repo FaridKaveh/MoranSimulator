@@ -5,6 +5,7 @@ You can make and build the project using CMake. You will need to have CMake inst
 Beware that CMake has several dependencies which will need to be installed first, for example you will need to have a C/C++ compiler installed. 
 
 1. Build using CMake
+   
    You will need a CMake version of 3.10 or later. Navigate to the repo directory and use the following commands
 
    ```
@@ -14,6 +15,7 @@ Beware that CMake has several dependencies which will need to be installed first
    CMake --build .
    ```
 2. Running MoranSimulator
+
    The program takes three arguments. The first is two are the population size and the number of events you want to simulate. These are parameters of the model. The third is the number of runs you want to simulate. If you want to calculate
    summary statistics you will probably want to average over more than one simulation. Here is an example on Linux
    ```
