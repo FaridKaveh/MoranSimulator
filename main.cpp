@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
     int mutations = 0;
 
     for (unsigned i = 0; i < runs; ++i){ 
-        mutations = moran.calculateNumberOfMutationEvents();
+        mutations = moran.getMutNumber();
         average_quotient += mutations / runs;  
         average_remainder += mutations % runs;
         moran.regeneratePath();

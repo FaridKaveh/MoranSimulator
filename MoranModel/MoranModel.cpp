@@ -41,7 +41,8 @@ void MoranProcess::generateMuts(){
     double rate = population* total_time * THETA/2; 
 
     std::poisson_distribution<int> mut_dist(rate);
-    int mut_number = mut_dist(engine); 
+    mut_number = mut_dist(engine); 
+    
     
     std::vector<double> weights (events, 0.0);
     
@@ -128,4 +129,14 @@ std::vector<int> MoranProcess::calcualteSegregatingSites(){
 
     std::vector<int> segregating_sites (population, 0);
     return segregating_sites;
+}
+
+std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){ 
+    if (level == -1){ 
+        level = events; 
+    }
+
+    std::vector< std::vector <int> > coalescent_tree; 
+
+    return coalescent_tree;
 }

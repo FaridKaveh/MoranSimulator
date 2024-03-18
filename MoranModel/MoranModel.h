@@ -13,6 +13,7 @@ stores a vector of arrays that records the history. The statistics can all be in
 private:
     int population; 
     int events;
+    int mut_number = 0;
 
     std::vector<double> event_times;
     std::vector <int> event_history; 
@@ -36,6 +37,7 @@ public:
     
     int getPopulation(){return this -> population;}
     int getPathLength(){return this -> events;}
+    int getMutNumber(){return this -> mut_number;}
 
     std::vector<double> getEventTimes(){return this -> event_times;}
     std::vector<int> getEventHistory(){return this -> event_history;}
@@ -44,6 +46,7 @@ public:
     int calculateFamilyHistories(bool draw = false);
     int calculateNumberOfMutationEvents();
     std::vector<int> calcualteSegregatingSites();
+    std::vector< std::vector<int> > buildCoalescentTree(int level = -1);
     
 };
 
