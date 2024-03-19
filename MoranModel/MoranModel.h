@@ -45,7 +45,11 @@ public:
 
     int calculateFamilyHistories(bool draw = false);
     std::vector<int> calcualteSegregatingSites();
+    std::vector<int> calculateSiteFrequencySpectrum(); 
+
+    
     std::vector< std::vector<int> > buildCoalescentTree(int level = -1);
+    
     
 };
 
