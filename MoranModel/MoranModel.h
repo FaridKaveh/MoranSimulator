@@ -17,7 +17,7 @@ private:
 
     std::vector<double> event_times;
     std::vector <int> event_history; 
-    std::vector <int> mutations;
+    std::vector < std::vector<double> > mutations;
     
     void generatePath(){
         generateTree();
@@ -41,10 +41,9 @@ public:
 
     std::vector<double> getEventTimes(){return this -> event_times;}
     std::vector<int> getEventHistory(){return this -> event_history;}
-    std::vector<int> getMutations(){return this -> mutations;}
+    std::vector< std::vector<double> > getMutations(){return this -> mutations;}
 
     int calculateFamilyHistories(bool draw = false);
-    int calculateNumberOfMutationEvents();
     std::vector<int> calcualteSegregatingSites();
     std::vector< std::vector<int> > buildCoalescentTree(int level = -1);
     

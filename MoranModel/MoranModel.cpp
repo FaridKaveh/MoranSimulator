@@ -32,7 +32,7 @@ void MoranProcess::generateTree(){
 
 void MoranProcess::generateMuts(){
 
-    mutations.clear();
+    mutations.assign(population, std::vector<double> ());
     
     std::random_device rd;
     std::default_random_engine engine(rd());
@@ -67,17 +67,23 @@ void MoranProcess::generateMuts(){
         }
     }
 
-    mutations.insert(mutations.end(), population*events, 0); 
+     
     std::uniform_int_distribution<> pick_line (0,population-1); 
+    std::uniform_real_distribution<> mutant_id (0,1); 
     int line; 
+    double id; 
 
-    for (int i = 0; i < events; ++i) { 
+    for (unsigned i = 0; i < events; ++i) { 
+
         while (allocations.at(i) > 0){
         line = pick_line(engine);
-        ++mutations.at(population*i+line);
+        id = mutant_id(engine); 
+        mutations.at(line).push_back(id);
 
         --allocations.at(i);
         }
+
+        mutations.at(event_history.at(2*i)) = mutations.at(event_history.at(2*i+1));
     }
 }
 
@@ -121,9 +127,6 @@ int MoranProcess::calculateFamilyHistories(bool draw){
     return i;
 }
 
-int MoranProcess::calculateNumberOfMutationEvents(){ 
-    return std::accumulate(mutations.begin(), mutations.end(), 0); 
-}
 
 std::vector<int> MoranProcess::calcualteSegregatingSites(){ 
 
