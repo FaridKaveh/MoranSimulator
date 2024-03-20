@@ -7,15 +7,17 @@
 #include "/home/farid/Documents/git/MoranSimulator/utils/utils.h" //print_vector
 #include "MoranModel.h"
 
-void MoranProcess::generateTree(){ 
+void MoranProcess::generateTree(unsigned seed){ 
 
     event_history.clear();
     event_times.clear();
     event_history.reserve(events);
     event_times.reserve(events);
 
+    
     std::random_device rd; //true random seed
-    std::default_random_engine engine(rd()); //pseudo random generator
+    std::default_random_engine engine (rd()); //pseudo random generator
+    
 
     std::exponential_distribution<double> death_dist (population); //exp dist with rate population
     auto death_event = std::bind(death_dist, engine);
@@ -30,13 +32,13 @@ void MoranProcess::generateTree(){
     }
 }
 
-void MoranProcess::generateMuts(){
+void MoranProcess::generateMuts(unsigned seed){
 
-    mutations.assign(population, std::vector<double> ());
+    mutations.assign(population, std::vector<int> ());
     
     std::random_device rd;
     std::default_random_engine engine(rd());
- 
+    
     double rate = events * THETA/(2*population); 
 
     std::poisson_distribution<int> mut_dist(rate);
@@ -129,14 +131,63 @@ int MoranProcess::calculateFamilyHistories(bool draw){
 }
 
 
-std::vector<int> MoranProcess::calcualteSegregatingSites(){ 
+std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){ 
 
-    std::vector<int> segregating_sites (population, 0);
-    return segregating_sites;
+    std::vector<int> occurrences;
+    unsigned size_of_occurrences;
+
+    for (unsigned i =0; i < population; ++i){ 
+        size_of_occurrences += mutations.at(i).size();
+    }
+    occurrences.reserve(size_of_occurrences);
+
+    for (std::vector<int> individual: mutations){
+        occurrences.insert(occurrences.end(), individual.begin(),individual.end());
+    }
+
+    std::sort(occurrences.begin(), occurrences.end());
+
+    std::vector<int>::reverse_iterator it = occurrences.rbegin();
+    int current_mut = *it;
+    int last_mut = *it;
+    int count = 1;
+
+    std::vector<int> sfs (population, 0);
+
+    while (it != occurrences.rend()){
+        // std::cout << *it << std::endl;
+        last_mut = *it;  
+        current_mut = *(++it); 
+
+        if (last_mut == current_mut){ 
+
+            ++count;
+            if (count == population) break; 
+
+        } else { 
+            ++sfs.at(count-1);
+            count = 1; 
+        } 
+        
+    }    
+
+    int non_fixed_muation_count = 0; 
+
+    for (int i = 0; i < population-1; ++i){ 
+        non_fixed_muation_count += i*sfs.at(i);
+    }
+
+    sfs.at(population-1) = (occurrences.size() - non_fixed_muation_count)/population;
+
+    return sfs;
 }
 
-std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){ 
-    return std::vector<int> ();
+int MoranProcess::calcualteSegregatingSites(){ 
+    
+    std::vector<int> sfs = calculateSiteFrequencySpectrum();
+    int segregating_sites = std::accumulate(sfs.begin(), sfs.end()-1, 0);
+
+    return segregating_sites;
 }
 
 std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){ 

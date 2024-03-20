@@ -17,15 +17,15 @@ private:
 
     std::vector<double> event_times;
     std::vector <int> event_history; 
-    std::vector < std::vector<double> > mutations;
+    std::vector < std::vector<int> > mutations;
     
-    void generatePath(){
-        generateTree();
-        generateMuts();
+    void generatePath(unsigned seed = 0){
+        generateTree(seed);
+        generateMuts(seed);
     };
 
-    void generateTree();
-    void generateMuts();
+    void generateTree(unsigned seed);
+    void generateMuts(unsigned seed);
 
 public:
     MoranProcess(const int& pop,const int& event_num): population(pop), events(event_num){
@@ -41,10 +41,10 @@ public:
 
     std::vector<double> getEventTimes(){return this -> event_times;}
     std::vector<int> getEventHistory(){return this -> event_history;}
-    std::vector< std::vector<double> > getMutations(){return this -> mutations;}
+    std::vector< std::vector<int> > getMutations(){return this -> mutations;}
 
     int calculateFamilyHistories(bool draw = false);
-    std::vector<int> calcualteSegregatingSites();
+    int calcualteSegregatingSites();
     std::vector<int> calculateSiteFrequencySpectrum(); 
 
     
