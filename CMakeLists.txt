@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.13.0)
 
 
 if(${CMAKE_VERSION} VERSION_LESS 3.28)
@@ -35,4 +35,7 @@ target_include_directories(MoranSimulator PUBLIC "${PROJECT_BINARY_DIR}"
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+
+set_target_properties(MoranModel PROPERTIES 
+        VS_DEBUGGER_COMMAND_ARGUMENTS "10 200 1")   
 include(CPack)

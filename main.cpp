@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
     << MoranModel_VERSION_MINOR << std::endl; 
 
     if (argc != 4) { 
-        std::cout << "Incorrect number of arguments\n"; 
+        std::cout << "Incorrect number of arguments\n";
+        std::cout << argc - 1 << "arguments given, 3 requred.\n"; 
         std::cout << "Usage: " << "./MoranSimulator population events runs\n";
 
         return 1;
@@ -26,6 +27,10 @@ int main(int argc, char* argv[]){
     int events = atoi(argv[2]);
     int population = atoi(argv[1]);
     
+    // int runs = 300; 
+    // int events = 500; 
+    // int population = 10;
+
     printf("POPULATION = %i, ", population);
     printf("EVENTS = %i, ", events);
     printf("RUNS = %i \n", runs); 
@@ -34,19 +39,21 @@ int main(int argc, char* argv[]){
     MoranProcess moran(population, events); 
     int average_quotient = 0; 
     int average_remainder = 0;
-    int mutations = 0;
+    int seg_sites = 0;
 
     for (unsigned i = 0; i < runs; ++i){ 
-        mutations = moran.getMutNumber();
-        average_quotient += mutations / runs;  
-        average_remainder += mutations % runs;
+        seg_sites = moran.calcualteSegregatingSites();
+        average_quotient += seg_sites / runs;  
+        average_remainder += seg_sites % runs;
         moran.regeneratePath();
     }
 
-    int average_mutations = average_quotient + average_remainder / runs; 
+    double average_mutations = average_quotient + 
+        static_cast<double> (average_remainder) / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
     
     printVectorOfVectors(moran.getMutations());
+    printVector(moran.calculateSiteFrequencySpectrum());
     // printVectorOfVectors(moran.getMutations());
     
     return 0;
