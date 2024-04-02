@@ -52,8 +52,8 @@ int main(int argc, char* argv[]){
         static_cast<double> (average_remainder) / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
     
-    printVectorOfVectors(moran.getMutations());
-    printVector(moran.calculateSiteFrequencySpectrum());
+    // printVectorOfVectors(moran.getMutations());
+    // printVector(moran.calculateSiteFrequencySpectrum());
     // printVectorOfVectors(moran.getMutations());
     
     return 0;
