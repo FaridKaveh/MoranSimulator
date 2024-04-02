@@ -45,7 +45,9 @@ int main(int argc, char* argv[]){
 
     int average_mutations = average_quotient + average_remainder / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
-    // printVector(moran.getMutations());
+    
+    printVectorOfVectors(moran.getMutations());
+    // printVectorOfVectors(moran.getMutations());
     
     return 0;
 }

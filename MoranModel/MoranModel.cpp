@@ -32,13 +32,12 @@ void MoranProcess::generateTree(){
 
 void MoranProcess::generateMuts(){
 
-    mutations.clear();
+    mutations.assign(population, std::vector<double> ());
     
     std::random_device rd;
     std::default_random_engine engine(rd());
-
-    double total_time = std::accumulate(event_times.begin(), event_times.end(), 0.0); 
-    double rate = population* total_time * THETA/2; 
+ 
+    double rate = events * THETA/(2*population); 
 
     std::poisson_distribution<int> mut_dist(rate);
     mut_number = mut_dist(engine); 
@@ -50,14 +49,15 @@ void MoranProcess::generateMuts(){
         weights.at(i) = i > 0 ? weights.at(i-1)+event_times.at(i) : event_times.at(i); 
     }  
 
-    std::uniform_real_distribution<> mut_drop(0, total_time); 
+    std::uniform_int_distribution<> mut_drop(0, events-1); 
     double draw;
     int box;
     std::vector<int> allocations (events, 0);
 
     for (int i = 0; i < mut_number; i++){ 
-        draw = mut_drop(engine); 
-        box = binarySearch(draw, weights);
+
+        box = mut_drop(engine); 
+
         try{ 
         ++allocations.at(box);
         }
@@ -67,17 +67,24 @@ void MoranProcess::generateMuts(){
         }
     }
 
-    mutations.insert(mutations.end(), population*events, 0); 
+     
     std::uniform_int_distribution<> pick_line (0,population-1); 
+    std::uniform_real_distribution<> mutant_id (0,1); 
     int line; 
+    unsigned id = 0; 
 
-    for (int i = 0; i < events; ++i) { 
+    for (unsigned i = 0; i < events; ++i) { 
+
+        line = event_history.at(2*i + 1);
+
         while (allocations.at(i) > 0){
-        line = pick_line(engine);
-        ++mutations.at(population*i+line);
-
+        
+        mutations.at(line).push_back(++id);
         --allocations.at(i);
+
         }
+
+        mutations.at(event_history.at(2*i)) = mutations.at(event_history.at(2*i+1));
     }
 }
 
@@ -121,14 +128,15 @@ int MoranProcess::calculateFamilyHistories(bool draw){
     return i;
 }
 
-int MoranProcess::calculateNumberOfMutationEvents(){ 
-    return std::accumulate(mutations.begin(), mutations.end(), 0); 
-}
 
 std::vector<int> MoranProcess::calcualteSegregatingSites(){ 
 
     std::vector<int> segregating_sites (population, 0);
     return segregating_sites;
+}
+
+std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){ 
+    return std::vector<int> ();
 }
 
 std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){ 
