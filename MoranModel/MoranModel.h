@@ -44,8 +44,15 @@ public:
     std::vector< std::vector<int> > getMutations(){return this -> mutations;}
 
     int calculateFamilyHistories(bool draw = false);
-    int calcualteSegregatingSites();
-    std::vector<int> calculateSiteFrequencySpectrum(); 
+    int calcualteSegregatingSites(
+        const std::vector< std::vector<int> >& sample = std::vector< std::vector<int> > ()
+    );
+    std::vector<int> calculateSiteFrequencySpectrum( 
+        const std::vector< std::vector<int> >& sample = std::vector < std::vector<int> > ()
+    ); 
+    std::vector<int> calculateMutationFrequencySpectrum(
+        const std::vector< std::vector<int> >& sample = std::vector < std::vector<int> > ()
+    );
 
     
     std::vector< std::vector<int> > buildCoalescentTree(int level = -1);

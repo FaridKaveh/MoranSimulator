@@ -1,6 +1,9 @@
 
 #include <iostream>
 #include <vector>
+#include <random>
+#include <chrono>
+#include <algorithm>
 
 template<typename T>
 void printVector(const std::vector<T>& vec) {
@@ -57,6 +60,19 @@ int binarySearch(const T& target, const std::vector<T>& vec) {
     }
 }
 
+template <typename T>
+T getMaxOfVector(const std::vector<T>& vec){
+    if (vec.empty()){
+        throw std::runtime_error("getMaxOfVector: input vector cannot be empty.");
+    }
+
+    T max_element = *vec.begin();
+    std::for_each(vec.begin()+1, vec.end(), 
+    [&](const T& val){max_element = std::max(max_element, val);});
+
+    return max_element;
+}
+
 template <typename T> 
 void addVectors(const std::vector<T>& summand, std::vector<T>& vec){ 
     if (summand.size() != vec.size()) {
@@ -66,4 +82,91 @@ void addVectors(const std::vector<T>& summand, std::vector<T>& vec){
     for (size_t i = 0; i < vec.size(); i++) {
         vec.at(i) += summand.at(i);
     }
+}
+
+template <typename T> 
+std::vector<T> sampleWithReplacement(
+    const std::vector<T>& population,
+    const int& sample_size,
+    const std::vector<double>& weights
+){ 
+std::vector<T> sample;
+
+if (sample_size >= population.size()) {
+    throw std::runtime_error("sampleWithReplacement: sample size must be smaller than population size");
+}
+
+if (weights.empty()) {
+    // Use uniform distribution
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(0, population.size() - 1);
+
+    for (int i = 0; i < sample_size; i++) {
+        int index = dist(gen);
+        sample.push_back(population.at(index));
+    }
+} else {
+    if (weights.size() != population.size()) {
+        throw std::runtime_error("takeSample: weights size must match population size");
+    }
+
+    // Normalise weights
+    double sum = std::accumulate(weights.begin(), weights.end(), 0.0);
+
+    std::vector<double> normalisedWeights;
+    normalisedWeights.reserve(weights.size());
+    for (const auto& weight : weights) {
+        normalisedWeights.push_back(weight / sum);
+    }
+
+    // Create piecewise distribution
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::piecewise_constant_distribution<> weight_dist (
+        population.size()-1,
+        0,
+        population.size()-1,
+        [&](const int& idx){return normalisedWeights.at(idx);}
+    );
+
+    // Sample according to weights
+    for (int i = 0; i < sample_size; i++) {
+        int randomValue = static_cast<int> (weight_dist(gen));
+        sample.push_back(population.at(randomValue));
+    }
+}
+
+return sample;
+}
+
+
+//sampleWithoutReplacement is not working.
+template <typename T>
+std::vector<T> sampleWithoutReplacement(
+    const std::vector<T>& population,
+    const int& sample_size
+){ 
+    if (sample_size > population.size()){
+        throw std::runtime_error("sampleWithoutReplacement: sample_size cannot be larger\
+         than population.size().");
+    }
+    std::vector<T> population_copy = population;
+
+    std::vector<T> sample; 
+    sample.reserve(sample_size);
+
+    unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine engine(seed1);
+
+    for (unsigned i = 0; i < sample_size; ++i){ 
+        std::uniform_int_distribution<> dist (0, population_copy.size()-1);
+
+        int j = dist(engine);
+        sample.push_back(population_copy.at(j));
+        std::cout << (population_copy.begin()+j-1) -> size() << std::endl;
+        population_copy.erase(population_copy.begin()+j-1);
+    }
+
+    return sample;
 }

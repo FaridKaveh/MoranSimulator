@@ -3,9 +3,12 @@
 #include <functional> // std::bind
 #include <vector>
 #include <array>
-#include <algorithm> //std::for_each
+#include <algorithm> //std::for_each, std::remove_if
 #include "/home/farid/Documents/git/MoranSimulator/utils/utils.h" //print_vector
 #include "MoranModel.h"
+
+
+typedef std::vector < std::vector<int> > TwoDIntVec;
 
 void MoranProcess::generateTree(unsigned seed){ 
 
@@ -131,20 +134,26 @@ int MoranProcess::calculateFamilyHistories(bool draw){
 }
 
 
-std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){ 
+std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(
+    const std::vector< std::vector<int> >& sample){ 
 
+    std::vector< std::vector <int> > mut_vector;
+
+    //if no sample is provided, use the whole population
+    mut_vector = sample.empty() ? mutations : sample;
+    int sample_size = mut_vector.size();
     std::vector<int> occurrences;
     unsigned size_of_occurrences;
 
-    for (unsigned i =0; i < population; ++i){ 
-        size_of_occurrences += mutations.at(i).size();
+    for (unsigned i =0; i < sample_size; ++i){ 
+        size_of_occurrences += mut_vector.at(i).size();
     }
     occurrences.reserve(size_of_occurrences);
 
-    for (std::vector<int> individual: mutations){
+    for (std::vector<int> individual: mut_vector){
         occurrences.insert(occurrences.end(), individual.begin(),individual.end());
     }
-
+    //order mutations from earliest to most recent 
     std::sort(occurrences.begin(), occurrences.end());
 
     std::vector<int>::reverse_iterator it = occurrences.rbegin();
@@ -153,16 +162,17 @@ std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){
     int count = 1;
 
     std::vector<int> sfs (population, 0);
-
+    //iterate backwards through occurrences and stop when you find a fixed mutation.
     while (it != occurrences.rend()){
-        // std::cout << *it << std::endl;
+        
         last_mut = *it;  
         current_mut = *(++it); 
 
         if (last_mut == current_mut){ 
 
             ++count;
-            if (count == population) break; 
+            //mutation is fixed -> all earlier (surviving) mutations also fixed
+            if (count == sample_size) break; 
 
         } else { 
             ++sfs.at(count-1);
@@ -173,21 +183,64 @@ std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(){
 
     int non_fixed_muation_count = 0; 
 
-    for (int i = 0; i < population-1; ++i){ 
+    for (int i = 0; i < sample_size-1; ++i){ 
         non_fixed_muation_count += i*sfs.at(i);
     }
 
-    sfs.at(population-1) = (occurrences.size() - non_fixed_muation_count)/population;
+    sfs.at(sample_size-1) = (occurrences.size() - non_fixed_muation_count)/sample_size;
 
     return sfs;
 }
 
-int MoranProcess::calcualteSegregatingSites(){ 
+int MoranProcess::calcualteSegregatingSites(
+    const std::vector< std::vector<int> >& sample){ 
     
-    std::vector<int> sfs = calculateSiteFrequencySpectrum();
+    std::vector<int> sfs = calculateSiteFrequencySpectrum(sample);
     int segregating_sites = std::accumulate(sfs.begin(), sfs.end()-1, 0);
 
     return segregating_sites;
+}
+
+std::vector<int> MoranProcess::calculateMutationFrequencySpectrum(
+    const TwoDIntVec& sample
+){  
+    TwoDIntVec mut_vector = sample.empty() ? mutations : sample;
+
+    int max_mutation = 0; 
+
+    std::for_each(mut_vector.begin(), mut_vector.end(),
+    [&](const std::vector<int>& mutations){
+        if (!mutations.empty()) max_mutation = std::max(max_mutation, mutations.back());
+    });
+
+    std::vector<int> freq_vector (max_mutation, 0);
+
+    for (unsigned i = 0; i < mut_vector.size(); ++i){ 
+
+        std::vector<int> individual = mut_vector.at(i);
+        for (unsigned j = 0; j < individual.size(); ++j){ 
+            ++freq_vector.at(individual.at(j)-1);
+        }
+    }
+
+    
+    if (freq_vector.empty()) { 
+        std::cout << "Warning: empty frequency vector. Possibly due to a small number of events or a \
+        small sample." << std::endl;
+        return freq_vector;
+    }
+
+    //disregard fixed and lost mutations.
+    freq_vector.erase(std::remove_if(freq_vector.begin(), freq_vector.end(), 
+    [&](const int& val){
+        return ( val == 0 || val == sample.size());
+        }), 
+        freq_vector.end());
+
+    if (freq_vector.empty()) { 
+        std::cout << "Warning: empty frequency vector. All mutations were fixed." << std::endl;
+    }
+    return freq_vector;
 }
 
 std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){ 

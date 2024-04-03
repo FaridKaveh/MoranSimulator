@@ -27,9 +27,9 @@ int main(int argc, char* argv[]){
     int events = atoi(argv[2]);
     int population = atoi(argv[1]);
     
-    // int runs = 300; 
-    // int events = 500; 
-    // int population = 10;
+    // int runs = 100; 
+    // int events = 20000; 
+    // int population = 100;
 
     printf("POPULATION = %i, ", population);
     printf("EVENTS = %i, ", events);
@@ -40,9 +40,17 @@ int main(int argc, char* argv[]){
     int average_quotient = 0; 
     int average_remainder = 0;
     int seg_sites = 0;
+    std::vector< std::vector<int> > sample;
+    std::vector< std::vector<int> > mutations; 
+    sample.reserve(10); mutations.reserve(100);
+
 
     for (unsigned i = 0; i < runs; ++i){ 
-        seg_sites = moran.calcualteSegregatingSites();
+
+        mutations = moran.getMutations();
+        sample.assign (mutations.begin(), mutations.begin()+10);
+
+        seg_sites = moran.calcualteSegregatingSites(sample);
         average_quotient += seg_sites / runs;  
         average_remainder += seg_sites % runs;
         moran.regeneratePath();
@@ -52,6 +60,7 @@ int main(int argc, char* argv[]){
         static_cast<double> (average_remainder) / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
     
+    printVector(moran.calculateMutationFrequencySpectrum(sample));
     // printVectorOfVectors(moran.getMutations());
     // printVector(moran.calculateSiteFrequencySpectrum());
     // printVectorOfVectors(moran.getMutations());
