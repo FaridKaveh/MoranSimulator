@@ -225,8 +225,8 @@ std::vector<int> MoranProcess::calculateMutationFrequencySpectrum(
 
     
     if (freq_vector.empty()) { 
-        std::cout << "Warning: empty frequency vector. Possibly due to a small number of events or a \
-        small sample." << std::endl;
+        std::cout << "Warning: empty frequency vector. Possibly due to a small number of events or a" <<
+        "small sample." << std::endl;
         return freq_vector;
     }
 

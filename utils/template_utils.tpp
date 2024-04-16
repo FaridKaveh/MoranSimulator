@@ -147,26 +147,20 @@ std::vector<T> sampleWithoutReplacement(
     const std::vector<T>& population,
     const int& sample_size
 ){ 
-    if (sample_size > population.size()){
-        throw std::runtime_error("sampleWithoutReplacement: sample_size cannot be larger\
-         than population.size().");
-    }
-    std::vector<T> population_copy = population;
-
-    std::vector<T> sample; 
-    sample.reserve(sample_size);
 
     unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine engine(seed1);
 
-    for (unsigned i = 0; i < sample_size; ++i){ 
-        std::uniform_int_distribution<> dist (0, population_copy.size()-1);
+    std::vector<int> perm; 
+    perm.reserve(population.size());
+    
+    for (unsigned i = 0; i < population.size(); ++i) perm.push_back(i);
 
-        int j = dist(engine);
-        sample.push_back(population_copy.at(j));
-        std::cout << (population_copy.begin()+j-1) -> size() << std::endl;
-        population_copy.erase(population_copy.begin()+j-1);
-    }
+    std::vector<T> sample;
+    sample.reserve(sample_size);
+
+    std::shuffle(perm.begin(), perm.end(), engine);
+    for (unsigned i = 0; i < sample_size; ++i) sample.push_back(population.at(perm.at(i)));
 
     return sample;
 }

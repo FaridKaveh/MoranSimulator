@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 
     if (argc != 4) { 
         std::cout << "Incorrect number of arguments\n";
-        std::cout << argc - 1 << "arguments given, 3 requred.\n"; 
+        std::cout << argc - 1 << " arguments given, 3 required.\n"; 
         std::cout << "Usage: " << "./MoranSimulator population events runs\n";
 
         return 1;
@@ -61,9 +61,6 @@ int main(int argc, char* argv[]){
     std::cout << "<S> = " << average_mutations << std::endl; 
     
     printVector(moran.calculateMutationFrequencySpectrum(sample));
-    // printVectorOfVectors(moran.getMutations());
-    // printVector(moran.calculateSiteFrequencySpectrum());
-    // printVectorOfVectors(moran.getMutations());
     
     return 0;
 }

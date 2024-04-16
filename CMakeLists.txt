@@ -8,7 +8,7 @@ else()
 endif()
 
 project(MoranModel 
-        VERSION 0.1.0 
+        VERSION 0.3.0 
         LANGUAGES C CXX
         DESCRIPTION "Moran model simulator"
         )
