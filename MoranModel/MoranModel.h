@@ -13,20 +13,23 @@ stores a vector of arrays that records the history. The statistics can all be in
 private:
     int population; 
     int events;
+    int equil_events = 0;
     int mut_number = 0;
 
     std::vector<double> event_times;
     std::vector <int> event_history; 
     std::vector < std::vector<int> > mutations;
+
+    void generateTree(const unsigned& seed, const bool& to_equil=false);
+    void generateMuts(const unsigned& seed);
+
     
     void generatePath(unsigned seed = 0){
-        generateTree(seed);
+        generateTree(seed, false);
         generateMuts(seed);
     };
 
-    void generateTree(unsigned seed);
-    void generateMuts(unsigned seed);
-
+    
 public:
     MoranProcess(const int& pop,const int& event_num): population(pop), events(event_num){
         generatePath();
@@ -56,8 +59,8 @@ public:
 
     
     std::vector< std::vector<int> > buildCoalescentTree(int level = -1);
-    
-    
+    bool isAtEquilibrium();
+     
 };
 
 #endif

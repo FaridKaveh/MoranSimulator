@@ -10,14 +10,13 @@
 
 typedef std::vector < std::vector<int> > TwoDIntVec;
 
-void MoranProcess::generateTree(unsigned seed){ 
+void MoranProcess::generateTree(const unsigned& seed, const bool& to_equil){ 
 
     event_history.clear();
     event_times.clear();
     event_history.reserve(events);
     event_times.reserve(events);
 
-    
     std::random_device rd; //true random seed
     std::default_random_engine engine (rd()); //pseudo random generator
     
@@ -28,14 +27,38 @@ void MoranProcess::generateTree(unsigned seed){
     std::uniform_int_distribution<int> select_dist(0, population-1);
     auto select_member = std::bind(select_dist, engine);
 
-    for (unsigned i = 0; i < events; ++i){ 
-        event_times.push_back(death_event());
-        event_history.push_back(select_member());
-        event_history.push_back(select_member()); 
+    if (!to_equil){
+
+        equil_events = events;
+        for (unsigned i = 0; i < events; ++i){ 
+            event_times.push_back(death_event());
+            //one member dies (even entries incluing 0)
+            event_history.push_back(select_member());
+            //one memeber replicates (odd entries starting from 1)
+            event_history.push_back(select_member()); 
+
+        }
+    } 
+    else { 
+        int step_size = events*events/2;
+
+        for (unsigned i = 0; i < events; ++i){ 
+            event_times.push_back(death_event());
+            //one member dies (even entries incluing 0)
+            event_history.push_back(select_member());
+            //one memeber replicates (odd entries starting from 1)
+            event_history.push_back(select_member()); 
+
+            if (!(i % step_size) && isAtEquilibrium()) {
+                equil_events = ++i; 
+                break;
+            }
+
+        }
     }
 }
 
-void MoranProcess::generateMuts(unsigned seed){
+void MoranProcess::generateMuts(const unsigned& seed){
 
     mutations.assign(population, std::vector<int> ());
     
@@ -230,7 +253,7 @@ std::vector<int> MoranProcess::calculateMutationFrequencySpectrum(
         return freq_vector;
     }
 
-    //disregard fixed and lost mutations.
+    //disregard fixed and lost mutations using erase-remove idiom
     freq_vector.erase(std::remove_if(freq_vector.begin(), freq_vector.end(), 
     [&](const int& val){
         return ( val == 0 || val == sample.size());
@@ -244,6 +267,8 @@ std::vector<int> MoranProcess::calculateMutationFrequencySpectrum(
 }
 
 std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){ 
+    /*can use the same algorithm as isAtEquilibrium, but needs to record the state of partitions after 
+    each equilibrium*/
     if (level == -1){ 
         level = events; 
     }
@@ -251,4 +276,32 @@ std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){
     std::vector< std::vector <int> > coalescent_tree; 
 
     return coalescent_tree;
+}
+
+bool MoranProcess::isAtEquilibrium(){ 
+
+    std::vector<int> partitions; 
+    partitions.reserve(population);
+
+    unsigned coalescence_events = 0;
+
+    for (unsigned i = 0; i < population; ++i) partitions.push_back(i);
+
+    auto birth_it = event_history.rbegin(); 
+    auto death_it = birth_it + 1; 
+
+    while (death_it != event_history.rend() && coalescence_events != population - 1){ 
+        
+        if (partitions.at(*death_it) != partitions.at(*birth_it)) {
+            partitions.at(*death_it) = partitions.at(*birth_it);
+            ++coalescence_events; 
+        }
+        
+        birth_it += 2; 
+        death_it += 2;
+    }
+
+    if (coalescence_events == population - 1) return true;
+
+    return false;
 }

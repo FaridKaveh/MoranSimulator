@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
         static_cast<double> (average_remainder) / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
     
-    printVector(moran.calculateMutationFrequencySpectrum(sample));
+    
     
     return 0;
 }
