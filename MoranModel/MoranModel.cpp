@@ -40,47 +40,81 @@ void MoranProcess::generateTree(const unsigned& seed, const bool& to_equil){
         }
     } 
     else { 
-        int step_size = events*events/2;
+        //In this case we only want to run the process until equilibrium.
+      
+        //keep track of which individuals belong to which families
+        std::vector<double> family_placement; 
+        family_placement.reserve(population);
+        for (unsigned i = 0; i < population; ++i){ 
+        family_placement.push_back(i);
+        }
+       
+        //keep track of how many individuals in each family
+        std::vector<double> family_count (population, 1);
+        
+        //number of extant family lines. Equilibrium when non_zero_count == 1
+        unsigned non_zero_count = population; 
 
         for (unsigned i = 0; i < events; ++i){ 
-            event_times.push_back(death_event());
-            //one member dies (even entries incluing 0)
-            event_history.push_back(select_member());
-            //one memeber replicates (odd entries starting from 1)
-            event_history.push_back(select_member()); 
 
-            if (!(i % step_size) && isAtEquilibrium()) {
-                equil_events = ++i; 
+            event_times.push_back(death_event());
+            
+            int dying = select_member(); 
+            int replicating = select_member();
+
+            //one member dies (even entries incluing 0)
+            event_history.push_back(dying);
+            //one memeber replicates (odd entries starting from 1)
+            event_history.push_back(replicating); 
+
+            //dying family
+            int dying_fam = family_placement.at(dying); 
+            //replicating family
+            int replicating_fam = family_placement.at(replicating); 
+
+            --family_count.at(dying_fam);
+            ++family_count.at(replicating_fam);
+
+            if (family_count.at(dying_fam) == 0) --non_zero_count;
+
+            family_placement.at(dying) = family_placement.at(replicating);
+
+            if (non_zero_count == 1) {
+                // printVector(family_placement);
+                // printVector(family_count);
+                equil_events = i+1;
                 break;
             }
-
         }
     }
 }
 
 void MoranProcess::generateMuts(const unsigned& seed){
+    
+    //if equilibrium is not reached, set to max events
+    equil_events = equil_events == -1 ? events : equil_events; 
 
     mutations.assign(population, std::vector<int> ());
     
     std::random_device rd;
     std::default_random_engine engine(rd());
     
-    double rate = events * THETA/(2*population); 
+    double rate = equil_events * THETA/(2*population); 
 
     std::poisson_distribution<int> mut_dist(rate);
     mut_number = mut_dist(engine); 
     
     
-    std::vector<double> weights (events, 0.0);
+    std::vector<double> weights (equil_events, 0.0);
     
-    for (int i = 0; i < events; ++i){ 
+    for (int i = 0; i < equil_events; ++i){ 
         weights.at(i) = i > 0 ? weights.at(i-1)+event_times.at(i) : event_times.at(i); 
     }  
 
-    std::uniform_int_distribution<> mut_drop(0, events-1); 
+    std::uniform_int_distribution<> mut_drop(0, equil_events-1); 
     double draw;
     int box;
-    std::vector<int> allocations (events, 0);
+    std::vector<int> allocations (equil_events, 0);
 
     for (int i = 0; i < mut_number; i++){ 
 
@@ -101,7 +135,7 @@ void MoranProcess::generateMuts(const unsigned& seed){
     int line; 
     unsigned id = 0; 
 
-    for (unsigned i = 0; i < events; ++i) { 
+    for (unsigned i = 0; i < equil_events; ++i) { 
 
         line = event_history.at(2*i + 1);
 
@@ -270,7 +304,7 @@ std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){
     /*can use the same algorithm as isAtEquilibrium, but needs to record the state of partitions after 
     each equilibrium*/
     if (level == -1){ 
-        level = events; 
+        level = equil_events; 
     }
 
     std::vector< std::vector <int> > coalescent_tree; 
@@ -279,29 +313,6 @@ std::vector < std::vector<int> > MoranProcess::buildCoalescentTree(int level){
 }
 
 bool MoranProcess::isAtEquilibrium(){ 
-
-    std::vector<int> partitions; 
-    partitions.reserve(population);
-
-    unsigned coalescence_events = 0;
-
-    for (unsigned i = 0; i < population; ++i) partitions.push_back(i);
-
-    auto birth_it = event_history.rbegin(); 
-    auto death_it = birth_it + 1; 
-
-    while (death_it != event_history.rend() && coalescence_events != population - 1){ 
-        
-        if (partitions.at(*death_it) != partitions.at(*birth_it)) {
-            partitions.at(*death_it) = partitions.at(*birth_it);
-            ++coalescence_events; 
-        }
-        
-        birth_it += 2; 
-        death_it += 2;
-    }
-
-    if (coalescence_events == population - 1) return true;
-
+    
     return false;
 }

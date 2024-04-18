@@ -13,8 +13,9 @@ stores a vector of arrays that records the history. The statistics can all be in
 private:
     int population; 
     int events;
-    int equil_events = 0;
+    int equil_events = -1;
     int mut_number = 0;
+    bool to_equil = false;
 
     std::vector<double> event_times;
     std::vector <int> event_history; 
@@ -24,23 +25,28 @@ private:
     void generateMuts(const unsigned& seed);
 
     
-    void generatePath(unsigned seed = 0){
-        generateTree(seed, false);
+    void generatePath( unsigned seed = 0){
+        generateTree(seed, to_equil);
         generateMuts(seed);
     };
 
     
 public:
-    MoranProcess(const int& pop,const int& event_num): population(pop), events(event_num){
+    MoranProcess(const int& pop,const int& event_num, const bool& to_equil): 
+    population(pop), events(event_num), to_equil(to_equil){
         generatePath();
     };
 
-    void regeneratePath(){generatePath();}
+    void regeneratePath(){
+        equil_events = -1;
+        generatePath();}
 
     
     int getPopulation(){return this -> population;}
     int getPathLength(){return this -> events;}
     int getMutNumber(){return this -> mut_number;}
+    
+    int getEquilEvents(){return this -> equil_events;}
 
     std::vector<double> getEventTimes(){return this -> event_times;}
     std::vector<int> getEventHistory(){return this -> event_history;}

@@ -36,21 +36,32 @@ int main(int argc, char* argv[]){
     printf("RUNS = %i \n", runs); 
 
 
-    MoranProcess moran(population, events); 
+
+    MoranProcess moran(population, events, true); 
+
     int average_quotient = 0; 
     int average_remainder = 0;
     int seg_sites = 0;
-    std::vector< std::vector<int> > sample;
-    std::vector< std::vector<int> > mutations; 
-    sample.reserve(10); mutations.reserve(100);
 
+    std::vector< std::vector<int> > sample; 
+    int sample_size = 10;
+    sample.reserve(sample_size);
+
+    int time_to_equil = 0;
+    int average_t_quotient = 0; 
+    int average_t_remainder = 0;
 
     for (unsigned i = 0; i < runs; ++i){ 
-
-        mutations = moran.getMutations();
-        sample.assign (mutations.begin(), mutations.begin()+10);
+        
+        // std::cout << "Event to equil: " << moran.getEquilEvents() << std::endl;
+        sample = sampleWithoutReplacement(moran.getMutations(), sample_size);
 
         seg_sites = moran.calcualteSegregatingSites(sample);
+        time_to_equil = moran.getEquilEvents();
+
+        average_t_quotient += time_to_equil / runs;
+        average_t_remainder += time_to_equil % runs;
+
         average_quotient += seg_sites / runs;  
         average_remainder += seg_sites % runs;
         moran.regeneratePath();
@@ -58,9 +69,14 @@ int main(int argc, char* argv[]){
 
     double average_mutations = average_quotient + 
         static_cast<double> (average_remainder) / runs; 
+    
+    double average_time = average_t_quotient + 
+        static_cast<double> (average_t_remainder) / runs;
+    
+
     std::cout << "<S> = " << average_mutations << std::endl; 
-    
-    
+    std::cout << "<T> = " << average_time << std::endl; 
+
     
     return 0;
 }
