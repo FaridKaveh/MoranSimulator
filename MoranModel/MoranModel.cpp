@@ -80,9 +80,8 @@ void MoranProcess::generateTree(const unsigned& seed, const bool& to_equil){
             family_placement.at(dying) = family_placement.at(replicating);
 
             if (non_zero_count == 1) {
-                // printVector(family_placement);
-                // printVector(family_count);
-                equil_events = i+1;
+                
+                equil_events = ++i;
                 break;
             }
         }
@@ -218,7 +217,7 @@ std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(
     int last_mut = *it;
     int count = 1;
 
-    std::vector<int> sfs (population, 0);
+    std::vector<int> sfs (sample_size, 0);
     //iterate backwards through occurrences and stop when you find a fixed mutation.
     while (it != occurrences.rend()){
         
