@@ -161,7 +161,7 @@ std::vector<int> MoranProcess::calculateSiteFrequencySpectrum(
     int last_mut = *it;
     int count = 1;
 
-    std::vector<int> sfs (population, 0);
+    std::vector<int> sfs (sample_size, 0);
     //iterate backwards through occurrences and stop when you find a fixed mutation.
     while (it != occurrences.rend()){
         

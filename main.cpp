@@ -41,15 +41,14 @@ int main(int argc, char* argv[]){
     int average_remainder = 0;
     int seg_sites = 0;
     std::vector< std::vector<int> > sample;
-    std::vector< std::vector<int> > mutations; 
-    sample.reserve(10); mutations.reserve(100);
+
+    sample.reserve(10); 
 
 
     for (unsigned i = 0; i < runs; ++i){ 
 
-        mutations = moran.getMutations();
-        sample.assign (mutations.begin(), mutations.begin()+10);
-
+        sample = sampleWithoutReplacement(moran.getMutations(), 10);
+        // printVectorOfVectors(sample);
         seg_sites = moran.calcualteSegregatingSites(sample);
         average_quotient += seg_sites / runs;  
         average_remainder += seg_sites % runs;
@@ -60,7 +59,7 @@ int main(int argc, char* argv[]){
         static_cast<double> (average_remainder) / runs; 
     std::cout << "<S> = " << average_mutations << std::endl; 
     
-    printVector(moran.calculateMutationFrequencySpectrum(sample));
+    // printVector(moran.calculateSiteFrequencySpectrum(sample));
     
     return 0;
 }
