@@ -40,7 +40,8 @@ void MoranProcess::generateTree(const unsigned& seed, const bool& to_equil){
         }
     } 
     else { 
-        //In this case we only want to run the process until equilibrium.
+        //In this case we only want to run the process until all indviduals 
+        //have a common ancestor.
       
         //keep track of which individuals belong to which families
         std::vector<double> family_placement; 
@@ -111,26 +112,20 @@ void MoranProcess::generateMuts(const unsigned& seed){
     }  
 
     std::uniform_int_distribution<> mut_drop(0, equil_events-1); 
-    double draw;
+
     int box;
     std::vector<int> allocations (equil_events, 0);
 
     for (int i = 0; i < mut_number; i++){ 
 
         box = mut_drop(engine); 
-
-        try{ 
         ++allocations.at(box);
-        }
-
-        catch (...){ 
-            printf("box = %i, draw = %f\n", box, draw);
-        }
+        
     }
 
      
-    std::uniform_int_distribution<> pick_line (0,population-1); 
-    std::uniform_real_distribution<> mutant_id (0,1); 
+    // std::uniform_int_distribution<> pick_line (0,population-1); 
+    // std::uniform_real_distribution<> mutant_id (0,1); 
     int line; 
     unsigned id = 0; 
 
